@@ -1,1 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sistem Indikator Kinerja</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --pink:#e91e63;
+  --soft-pink:#fff0f5;
+  --border:#f5c7d8;
+  --text:#333;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:#fafafa;
+  color:var(--text);
+}
+
+.container{
+  width:min(1200px,95%);
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 5px 20px rgba(0,0,0,.08);
+  margin-bottom:20px;
+}
+
+.header-img{
+  width:100%;
+  border-radius:18px;
+  display:block;
+}
+
+h2{
+  color:var(--pink);
+  margin-bottom:20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+label{
+  margin-bottom:6px;
+  font-weight:600;
+}
+
+input,
+textarea,
+select{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:12px;
+  font-size:14px;
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.btn{
+  background:var(--pink);
+  color:white;
+  border:none;
+  border-radius:10px;
+  padding:12px 20px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn:hover{
+  opacity:.9;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.search{
+  margin-bottom:15px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th{
+  background:var(--pink);
+  color:white;
+}
+
+th,td{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:left;
+}
+
+.loading{
+  display:none;
+  margin-top:10px;
+  color:var(--pink);
+  font-weight:600;
+}
+
+@media(max-width:768px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img
+class="header-img"
+src="https://i.ibb.co.com/PZZhXcQC/header-ekin.jpg"
+
+>
+
+  <div class="card">
+
+<h2>Data Indikator Kinerja</h2>
+
+<form id="formData">
+
+  <div class="grid">
+
+    <div class="field">
+      <label>Bulan</label>
+      <input id="bulan" required>
+    </div>
+
+    <div class="field">
+      <label>Tahun</label>
+      <input id="tahun" required>
+    </div>
+
+    <div class="field full">
+      <label>Indikator Kinerja</label>
+      <textarea id="indikator"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Target Kinerja</label>
+      <textarea id="target"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Formula Indikator</label>
+      <textarea id="formula"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Penjelasan Formula</label>
+      <textarea id="penjelasanFormula"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Realisasi Kinerja</label>
+      <textarea id="realisasi"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Penjelasan Realisasi</label>
+      <textarea id="penjelasanRealisasi"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Kesimpulan</label>
+      <textarea id="kesimpulan"></textarea>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button type="submit" class="btn">
+      Simpan Data
+    </button>
+  </div>
+
+  <div class="loading" id="loading">
+    Menyimpan data...
+  </div>
+
+</form>
+
+
+  </div>
+
+  <div class="card">
+
+<h2>Arsip Dokumen</h2>
+
+<input
+  class="search"
+  id="search"
+  placeholder="Cari indikator..."
+>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bulan</th>
+      <th>Tahun</th>
+      <th>Indikator</th>
+    </tr>
+  </thead>
+  <tbody id="arsipBody"></tbody>
+</table>
+
+
+  </div>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbxaVsGBpES0BeRghPjXgLyjJqekUZiBykHQq1K3MEh_D91aqrDidHvefDhxN_b6AG7K/exec";
+
+const form = document.getElementById("formData");
+const loading = document.getElementById("loading");
+
+form.addEventListener("submit", async e => {
+
+  e.preventDefault();
+
+  loading.style.display = "block";
+
+  const payload = {
+    action:"save",
+    bulan:bulan.value,
+    tahun:tahun.value,
+    indikator:indikator.value,
+    target:target.value,
+    formula:formula.value,
+    penjelasanFormula:penjelasanFormula.value,
+    realisasi:realisasi.value,
+    penjelasanRealisasi:penjelasanRealisasi.value,
+    kesimpulan:kesimpulan.value
+  };
+
+  const res = await fetch(API,{
+    method:"POST",
+    body:JSON.stringify(payload)
+  });
+
+  const json = await res.json();
+
+  loading.style.display = "none";
+
+  alert(json.message || "Berhasil");
+
+  loadArsip();
+
+});
+
+async function loadArsip(){
+
+  const res = await fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"getArsip"
+    })
+  });
+
+  const json = await res.json();
+
+  const tbody =
+    document.getElementById("arsipBody");
+
+  tbody.innerHTML="";
+
+  json.data.forEach(item=>{
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${item.bulan}</td>
+        <td>${item.tahun}</td>
+        <td>${item.indikator}</td>
+      </tr>
+    `;
+
+  });
+
+}
+
+loadArsip();
+
+</script>
+
+</body>
+</html>
 
